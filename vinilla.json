@@ -1,0 +1,10 @@
+{
+    "name": "DiContainer",
+    "vendor": "CodingLiki",
+    "description": "Dependency injection container based on Psr-11 interface",
+    "repo_url": "https://github.com/coding-liki/DiContainer",
+    "depends_on": [
+        "CodingLiki/OoAutoloader",
+        "Psr/container"
+    ]
+}
