@@ -3,6 +3,7 @@
 namespace CodingLiki\DiContainer;
 
 
+use CodingLiki\DiContainer\Exceptions\ContainerException;
 use CodingLiki\DiContainer\Exceptions\NotFoundException;
 use CodingLiki\DiContainer\Exceptions\ServiceAlreadyExist;
 use CodingLiki\DiContainer\Middlewares\MiddlewareInterface;
@@ -50,7 +51,7 @@ class DiContainer implements DiContainerInterface
                 return $this->singletonServices[$id]->get();
             }
         } catch (\Throwable $throwable){
-            throw new ContainerException($id, $throwable);
+            throw new ContainerException($id, 0,  $throwable);
         }
 
         throw new NotFoundException($id);
@@ -85,7 +86,7 @@ class DiContainer implements DiContainerInterface
 
         $factory = new ServiceFactory($this);
 
-        $service = $factory->build($configuration);
+        $service = $factory->build($id, $configuration);
 
         if ($service instanceof SingletonInterface) {
             $this->singletonServices[$id] = $service;

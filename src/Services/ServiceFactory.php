@@ -20,10 +20,10 @@ class ServiceFactory
     {
     }
 
-    public function build(mixed $configuration): ServiceInterface
+    public function build(string $id, mixed $configuration): ServiceInterface
     {
         if (!is_array($configuration) || !isset($configuration[self::CLASS_KEY])) {
-            return new ParameterService($configuration);
+            return new ParameterService($id, $configuration);
         }
 
         $isSingleton = $configuration[self::SINGLETON_KEY] ?? false;
@@ -66,10 +66,24 @@ class ServiceFactory
     private function buildParams(array $paramsDefinition): array
     {
         return array_map(function (mixed $parameter): mixed {
-            if (is_string($parameter) && str_starts_with($parameter, self::SERVICE_LINK_PREFIX)) {
-                return $this->container->get(trim($parameter, self::SERVICE_LINK_PREFIX));
+            if (is_array($parameter)) {
+                return array_map([$this, 'buildParameter'], $parameter);
             }
-            return $parameter;
+            return $this->buildParameter($parameter);
         }, $paramsDefinition);
+    }
+
+    /**
+     * @param mixed $parameter
+     * @return mixed
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    function buildParameter(mixed $parameter): mixed
+    {
+        if (is_string($parameter) && str_starts_with($parameter, self::SERVICE_LINK_PREFIX)) {
+            return $this->container->get(trim($parameter, self::SERVICE_LINK_PREFIX));
+        }
+        return $parameter;
     }
 }
