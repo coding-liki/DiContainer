@@ -1,6 +1,7 @@
 {
     "name": "DiContainer",
     "vendor": "CodingLiki",
+    "version": "0.0.1",
     "description": "Dependency injection container based on Psr-11 interface",
     "repo_url": "https://github.com/coding-liki/DiContainer",
     "depends_on": [
