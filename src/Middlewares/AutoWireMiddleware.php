@@ -103,4 +103,12 @@ class AutoWireMiddleware extends AbstractMiddleware
     }
 
 
+    public function get(string $name): mixed
+    {
+        if(!$this->container->has($name) && class_exists($name)){
+            return $this->autowire($name);
+        }
+
+        return NULL;
+    }
 }

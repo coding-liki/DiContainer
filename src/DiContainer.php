@@ -38,6 +38,12 @@ class DiContainer implements DiContainerInterface
 
     public function get(string $id): mixed
     {
+        foreach ($this->middlewares as $middleware) {
+            $result = $middleware->get($id);
+            if($result !== NULL){
+                return $result;
+            }
+        }
         if (isset($this->classNameToServiceId[$id])) {
             $id = $this->classNameToServiceId[$id];
         }

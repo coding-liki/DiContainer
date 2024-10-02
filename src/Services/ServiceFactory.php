@@ -51,6 +51,7 @@ class ServiceFactory
         $class = $configuration[self::CLASS_KEY];
 
         $constructParams = $this->buildParams($configuration[self::CONSTRUCT_KEY] ?? []);
+
         $setParams = $this->buildParams($configuration[self::SET_KEY] ?? []);
         $publicParams = $this->buildParams($configuration[self::PUBLIC_KEY] ?? []);
 
