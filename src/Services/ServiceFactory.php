@@ -23,7 +23,11 @@ class ServiceFactory
     public function build(string $id, mixed $configuration): ServiceInterface
     {
         if (!is_array($configuration) || !isset($configuration[self::CLASS_KEY])) {
-            return new ParameterService($id, $configuration);
+            if (is_string($configuration) && class_exists($configuration)) {
+                $configuration = [self::CLASS_KEY => $configuration];
+            } else {
+                return new ParameterService($id, $configuration);
+            }
         }
 
         $isSingleton = $configuration[self::SINGLETON_KEY] ?? false;
