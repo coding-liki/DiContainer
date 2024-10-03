@@ -40,7 +40,7 @@ class DiContainer implements DiContainerInterface
     {
         foreach ($this->middlewares as $middleware) {
             $result = $middleware->get($id);
-            if($result !== NULL){
+            if ($result !== NULL) {
                 return $result;
             }
         }
@@ -56,8 +56,8 @@ class DiContainer implements DiContainerInterface
             if (isset($this->singletonServices[$id])) {
                 return $this->singletonServices[$id]->get();
             }
-        } catch (\Throwable $throwable){
-            throw new ContainerException($id, 0,  $throwable);
+        } catch (\Throwable $throwable) {
+            throw new ContainerException($id, 0, $throwable);
         }
 
         throw new NotFoundException($id);
@@ -82,6 +82,9 @@ class DiContainer implements DiContainerInterface
 
     public function add(string $id, mixed $configuration): static
     {
+        if (is_string($configuration) && class_exists($configuration)) {
+            $configuration = [ServiceFactory::CLASS_KEY => $configuration];
+        }
         foreach ($this->middlewares as $middleware) {
             $configuration = $middleware->prepareConfiguration($configuration);
         }

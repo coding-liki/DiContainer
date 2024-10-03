@@ -13,6 +13,7 @@ class AutoWireMiddleware extends AbstractMiddleware
     public function prepareConfiguration(mixed $configuration): mixed
     {
 
+
         if (
             !is_array($configuration)
             || !isset($configuration[ServiceFactory::CLASS_KEY])
@@ -20,11 +21,7 @@ class AutoWireMiddleware extends AbstractMiddleware
             return $configuration;
         }
 
-//        try {
-            return $this->normaliseConstructorConfiguration($configuration);
-//        } catch(CannotAutowireParameter $e){
-//
-//        }
+        return $this->normaliseConstructorConfiguration($configuration);
     }
 
 
@@ -44,16 +41,18 @@ class AutoWireMiddleware extends AbstractMiddleware
 
             $configurationValue = $constructConfiguration[$name] ?? $default;
 
-            if (!$nullable) {
+            if (!$nullable && $configurationValue === null) {
+                $lastError = NULL;
                 foreach ($classes as $class) {
                     try {
                         $configurationValue = $this->autowire($class);
                     } catch (\Exception $e) {
+                        $lastError = $e;
                         continue;
                     }
                 }
                 if ($configurationValue === null) {
-                    throw new CannotAutowireParameter($classRef->getName(), $name);
+                    throw $lastError ?? new CannotAutowireParameter($classRef->getName(), $name);
                 }
             }
 
@@ -68,7 +67,7 @@ class AutoWireMiddleware extends AbstractMiddleware
     {
         $constructorConfiguration = [];
 
-        $constructor =  $classRef->getConstructor();
+        $constructor = $classRef->getConstructor();
         $constructParams = $constructor ? $constructor->getParameters() : [];
 
         foreach ($constructParams as $parameter) {
@@ -93,7 +92,7 @@ class AutoWireMiddleware extends AbstractMiddleware
 
     private function autowire(string $class): mixed
     {
-        if (!$this->container->has($class)){
+        if (!$this->container->has($class)) {
             $this->container->add($class, [
                 ServiceFactory::CLASS_KEY => $class
             ]);
@@ -105,7 +104,7 @@ class AutoWireMiddleware extends AbstractMiddleware
 
     public function get(string $name): mixed
     {
-        if(!$this->container->has($name) && class_exists($name)){
+        if (!$this->container->has($name) && class_exists($name)) {
             return $this->autowire($name);
         }
 
